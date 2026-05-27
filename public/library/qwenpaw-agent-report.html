@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>QwenPaw + Qwen-3.6-Plus 智能体搭建方案优势分析</title>
+<meta name="author" content="比比">
+<meta name="description" content="分析使用 QwenPaw 智能体平台配合 Qwen-3.6-Plus 模型及阿里云百炼 Token Plan 团队版搭建企业级智能体的方案优势，涵盖技术能力、成本效益与数据安全保障。">
+<meta name="keywords" content="QwenPaw, Qwen-3.6-Plus, 智能体, 阿里云百炼, Token Plan, 数据安全, 企业级">
+<meta name="generator" content="Kami">
+<style>
+  @font-face {
+    font-family: "TsangerJinKai02";
+    src: url("../fonts/TsangerJinKai02-W04.ttf") format("truetype"),
+       url("https://cdn.jsdelivr.net/gh/tw93/Kami@main/assets/fonts/TsangerJinKai02-W04.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "TsangerJinKai02";
+    src: url("../fonts/TsangerJinKai02-W05.ttf") format("truetype"),
+       url("https://cdn.jsdelivr.net/gh/tw93/Kami@main/assets/fonts/TsangerJinKai02-W05.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+  }
+  @page {
+    size: A4;
+    margin: 20mm 22mm 22mm 22mm;
+    background: #f5f4ed;
+    @top-right {
+      content: string(section-title);
+      font-family: "TsangerJinKai02", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", Georgia, serif;
+      font-size: 8pt;
+      color: #6b6a64;
+    }
+    @bottom-center {
+      content: counter(page) "  ·  QwenPaw + Qwen-3.6-Plus 智能体方案";
+      font-family: "TsangerJinKai02", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", Georgia, serif;
+      font-size: 9pt;
+      color: #6b6a64;
+    }
+  }
+  @page:first {
+    @top-right { content: ""; }
+    @bottom-center { content: ""; }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --parchment: #f5f4ed;
+    --ivory:     #faf9f5;
+    --near-black:#141413;
+    --dark-warm: #3d3d3a;
+    --olive:     #504e49;
+    --stone:     #6b6a64;
+    --brand:     #1B365D;
+    --brand-light:#2D5A8A;
+    --border:    #e8e6dc;
+    --border-soft:#e5e3d8;
+    --tag-bg:    #E4ECF5;
+    --serif: "TsangerJinKai02", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "STSong", Georgia, serif;
+    --sans: var(--serif);
+    --mono: "JetBrains Mono", "SF Mono", Consolas, "TsangerJinKai02", "Source Han Serif SC", monospace;
+  }
+  html, body { background: var(--parchment); }
+  @media screen {
+    body { max-width: 210mm; margin: 0 auto; padding: 20mm 22mm 22mm 22mm; }
+  }
+  body {
+    color: var(--near-black);
+    font-family: var(--serif);
+    font-size: 10.5pt;
+    line-height: 1.55;
+    letter-spacing: 0.3pt;
+  }
+  .sans { font-family: var(--sans); }
+  .cover {
+    min-height: 240mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 40mm 0 0 0;
+    break-after: page;
+  }
+  .cover-eyebrow {
+    font-family: var(--sans);
+    font-size: 10pt;
+    color: var(--brand);
+    letter-spacing: 1pt;
+    margin-bottom: 18pt;
+  }
+  .cover-title {
+    font-size: 36pt;
+    font-weight: 500;
+    color: var(--near-black);
+    line-height: 1.15;
+    letter-spacing: 0.3pt;
+    margin-bottom: 16pt;
+  }
+  .cover-sub {
+    font-family: var(--sans);
+    font-size: 14pt;
+    color: var(--olive);
+    line-height: 1.5;
+    max-width: 85%;
+    margin-bottom: 30pt;
+  }
+  .cover-meta {
+    font-family: var(--sans);
+    font-size: 10pt;
+    color: var(--stone);
+    line-height: 1.5;
+  }
+  .cover-meta strong {
+    color: var(--dark-warm);
+    font-weight: 500;
+  }
+  .toc { break-after: page; }
+  .toc h2 {
+    font-size: 22pt;
+    font-weight: 500;
+    margin-bottom: 14pt;
+    border-left: 2.5pt solid var(--brand);
+    border-radius: 1.5pt;
+    padding-left: 8pt;
+  }
+  .toc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 6pt 0;
+    border-bottom: 0.3pt dotted var(--border);
+    font-size: 11pt;
+  }
+  .toc-num {
+    color: var(--brand);
+    font-weight: 500;
+    min-width: 30pt;
+  }
+  .toc-title {
+    flex: 1;
+    color: var(--near-black);
+    padding-left: 6pt;
+  }
+  .toc-page {
+    color: var(--stone);
+    font-variant-numeric: tabular-nums;
+  }
+  h1 {
+    font-size: 22pt;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 0 0 10pt 0;
+    border-left: 2.5pt solid var(--brand);
+    border-radius: 1.5pt;
+    padding-left: 8pt;
+    color: var(--near-black);
+    break-after: avoid;
+  }
+  h2 {
+    font-size: 16pt;
+    font-weight: 500;
+    line-height: 1.25;
+    margin: 24pt 0 6pt 0;
+    color: var(--near-black);
+    break-after: avoid;
+    string-set: section-title content();
+  }
+  h3 {
+    font-size: 13pt;
+    font-weight: 500;
+    line-height: 1.3;
+    margin: 18pt 0 4pt 0;
+    color: var(--dark-warm);
+    break-after: avoid;
+  }
+  .chapter-num {
+    font-family: var(--sans);
+    font-size: 10pt;
+    color: var(--brand);
+    letter-spacing: 1pt;
+    margin-bottom: 6pt;
+  }
+  p {
+    margin: 0 0 10pt 0;
+    line-height: 1.55;
+    color: var(--near-black);
+  }
+  .lead {
+    font-size: 12pt;
+    line-height: 1.55;
+    color: var(--dark-warm);
+    margin-bottom: 14pt;
+  }
+  .hl { color: var(--brand); }
+  strong { font-weight: 500; }
+  ul, ol {
+    margin: 6pt 0 10pt 0;
+    padding-left: 20pt;
+    line-height: 1.55;
+  }
+  ul li::marker { color: var(--brand); }
+  ol li::marker { color: var(--brand); font-weight: 500; }
+  blockquote, .quote {
+    border-left: 2pt solid var(--brand);
+    margin: 12pt 0;
+    padding: 4pt 0 4pt 16pt;
+    color: var(--olive);
+    line-height: 1.55;
+    break-inside: avoid;
+  }
+  blockquote .cite, .quote .cite {
+    display: block;
+    font-size: 9pt;
+    color: var(--stone);
+    margin-top: 4pt;
+  }
+  code {
+    font-family: var(--mono);
+    font-size: 9pt;
+    background: var(--ivory);
+    padding: 1pt 4pt;
+    border-radius: 2pt;
+    color: var(--dark-warm);
+  }
+  pre {
+    font-family: var(--mono);
+    font-size: 9pt;
+    line-height: 1.5;
+    background: var(--ivory);
+    border: 0.5pt solid var(--border-soft);
+    border-radius: 4pt;
+    padding: 10pt 14pt;
+    margin: 10pt 0;
+    white-space: pre-wrap;
+    color: var(--near-black);
+    break-inside: avoid;
+  }
+  pre code { background: transparent; padding: 0; font-size: inherit; }
+  table, .kami-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+    margin: 12pt 0;
+    break-inside: avoid;
+  }
+  table th, .kami-table th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--dark-warm);
+    padding: 6pt 8pt;
+    border-bottom: 1pt solid var(--border);
+    background: transparent;
+  }
+  table td, .kami-table td {
+    padding: 5pt 8pt;
+    border-bottom: 0.3pt solid var(--border-soft);
+    vertical-align: top;
+  }
+  table.financial td:not(:first-child), .kami-table.financial td:not(:first-child) {
+    text-align: right; font-variant-numeric: tabular-nums;
+  }
+  table.financial th:not(:first-child), .kami-table.financial th:not(:first-child) { text-align: right; }
+  table.striped tbody tr:nth-child(even) td, .kami-table.striped tbody tr:nth-child(even) td {
+    background: var(--ivory);
+  }
+  .callout {
+    background: var(--ivory);
+    border-left: 2pt solid var(--brand);
+    padding: 10pt 14pt;
+    border-radius: 3pt;
+    margin: 12pt 0;
+    line-height: 1.55;
+    break-inside: avoid;
+  }
+  .takeaway {
+    background: var(--ivory);
+    border: 0.5pt solid var(--border);
+    border-radius: 4pt;
+    padding: 10pt 14pt;
+    margin: 14pt 0;
+    break-inside: avoid;
+  }
+  .takeaway-label {
+    font-family: var(--sans);
+    font-size: 9pt;
+    color: var(--brand);
+    letter-spacing: 0.5pt;
+    margin-bottom: 4pt;
+  }
+  .tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--brand);
+    font-family: var(--sans);
+    font-size: 9pt;
+    font-weight: 500;
+    padding: 1pt 6pt;
+    border-radius: 3pt;
+    margin-right: 4pt;
+  }
+  figure {
+    margin: 14pt 0;
+    break-inside: avoid;
+  }
+  figcaption {
+    font-family: var(--sans);
+    font-size: 9pt;
+    color: var(--stone);
+    margin-top: 6pt;
+    text-align: center;
+  }
+  .chapter { break-before: page; }
+  .metrics { display: flex; gap: 24pt; }
+  .metric  { flex: 1; display: flex; align-items: baseline; gap: 6pt; }
+  .metric-value {
+    font-family: var(--serif);
+    font-size: 16pt;
+    font-weight: 500;
+    color: var(--brand);
+    font-variant-numeric: tabular-nums;
+  }
+  .metric-label { font-size: 9pt; color: var(--olive); }
+</style>
+</head>
+<body>
+
+<!-- ═════════════ COVER ═════════════ -->
+<section class="cover">
+  <div>
+    <div class="cover-eyebrow">技术方案分析报告</div>
+    <div class="cover-title">QwenPaw + Qwen-3.6-Plus<br>智能体搭建方案优势分析</div>
+    <div class="cover-sub">基于阿里云百炼 Token Plan 团队版的企业级智能体构建方案，从技术能力、成本效益、数据安全保障三个维度进行系统性评估</div>
+  </div>
+  <div class="cover-meta">
+    <strong>比比 · QwenPaw Agent</strong><br>
+    V1.0 · 2026.05<br>
+    内部技术分析报告
+  </div>
+</section>
+
+<!-- ═════════════ 目录 ═════════════ -->
+<section class="toc">
+  <h2>目录</h2>
+  <div class="toc-item">
+    <span class="toc-num">01</span>
+    <span class="toc-title">执行摘要</span>
+    <span class="toc-page">03</span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">02</span>
+    <span class="toc-title">智能体平台选型：QwenPaw 的核心能力</span>
+    <span class="toc-page">04</span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">03</span>
+    <span class="toc-title">大模型底座：Qwen-3.6-Plus 的优势</span>
+    <span class="toc-page">06</span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">04</span>
+    <span class="toc-title">成本架构：阿里云百炼 Token Plan 团队版</span>
+    <span class="toc-page">08</span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">05</span>
+    <span class="toc-title">企业级数据安全保障体系</span>
+    <span class="toc-page">10</span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">06</span>
+    <span class="toc-title">方案综合评估与对比</span>
+    <span class="toc-page">12</span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">07</span>
+    <span class="toc-title">结论与建议</span>
+    <span class="toc-page">14</span>
+  </div>
+</section>
+
+<!-- ═════════════ Chapter 01：执行摘要 ═════════════ -->
+<section>
+  <div class="chapter-num">01 · Executive Summary</div>
+  <h1>执行摘要</h1>
+
+  <p class="lead">
+    将 <span class="hl">QwenPaw 智能体平台</span> 与 <span class="hl">Qwen-3.6-Plus 模型</span> 结合，通过阿里云百炼 Token Plan 团队版进行部署，构成了一套从工具链、模型能力到成本控制、安全保障均具备显著优势的企业级智能体搭建方案。该方案在技术可行性、经济性和数据安全性三个核心维度上，为企业 AI 落地提供了清晰的路径。
+  </p>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-value">3 层</div>
+      <div class="metric-label">安全防护</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">SOC 2</div>
+      <div class="metric-label">合规认证</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">AES-256</div>
+      <div class="metric-label">数据加密</div>
+    </div>
+  </div>
+
+  <h2>核心 Takeaways</h2>
+  <ul>
+    <li>QwenPaw 提供开箱即用的智能体编排能力，支持工具调用、多轮对话、记忆管理等核心功能，大幅降低智能体开发门槛</li>
+    <li>Qwen-3.6-Plus 在中文理解、逻辑推理和代码生成方面表现优异，性价比显著优于同等参数规模的开源模型</li>
+    <li>阿里云百炼 Token Plan 团队版提供可预测的成本结构，承诺<strong>不使用用户对话数据训练模型</strong>，从源头保障数据隐私</li>
+    <li>传输层 HTTPS 加密 + 多租户隔离架构 + SOC 2 合规认证，形成三层数据安全保障体系</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="takeaway-label">本文档回答的问题</div>
+    <p>1. 为什么选择 QwenPaw 作为智能体平台？</p>
+    <p>2. Qwen-3.6-Plus 相比其他模型有什么优势？</p>
+    <p>3. 阿里云百炼 Token Plan 团队版的成本和数据安全表现如何？</p>
+  </div>
+</section>
+
+<!-- ═════════════ Chapter 02：QwenPaw 平台能力 ═════════════ -->
+<section class="chapter">
+  <div class="chapter-num">02 · Agent Platform</div>
+  <h1>智能体平台选型：QwenPaw 的核心能力</h1>
+
+  <p class="lead">
+    QwenPaw 不仅是一个框架，更是一套完整的智能体生命周期管理平台——从开发、测试、部署到监控，覆盖了智能体从概念到生产环境的每一个环节。
+  </p>
+
+  <h2>核心架构优势</h2>
+  <p>QwenPaw 的设计哲学是「<span class="hl">智能体即服务</span>」。它将复杂的 AI 编排抽象为可复用的组件，使开发者能够专注于业务逻辑而非底层基础设施。</p>
+
+  <figure>
+    <svg viewBox="0 0 960 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:700px;display:block;">
+      <defs>
+        <pattern id="dots2" width="18" height="18" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="0.8" fill="#e8e6dc"/>
+        </pattern>
+      </defs>
+      <rect width="960" height="420" fill="url(#dots2)" rx="6"/>
+
+      <!-- Central: QwenPaw Platform -->
+      <rect x="340" y="140" width="280" height="140" rx="12" fill="#1B365D"/>
+      <text x="480" y="195" text-anchor="middle" fill="#faf9f5" font-size="22" font-weight="500" font-family="TsangerJinKai02, serif">QwenPaw</text>
+      <text x="480" y="225" text-anchor="middle" fill="#EEF2F7" font-size="13" font-family="TsangerJinKai02, serif">智能体编排平台</text>
+      <text x="480" y="255" text-anchor="middle" fill="#EEF2F7" font-size="11" font-family="TsangerJinKai02, serif">Agent Orchestration Platform</text>
+
+      <!-- Top: User Layer -->
+      <rect x="360" y="20" width="240" height="70" rx="8" fill="#faf9f5" stroke="#e8e6dc" stroke-width="1"/>
+      <text x="480" y="52" text-anchor="middle" fill="#141413" font-size="15" font-weight="500" font-family="TsangerJinKai02, serif">用户交互层</text>
+      <text x="480" y="74" text-anchor="middle" fill="#504e49" font-size="11" font-family="TsangerJinKai02, serif">Web / CLI / API / 多端接入</text>
+
+      <!-- Connection: User to Platform -->
+      <line x1="480" y1="90" x2="480" y2="140" stroke="#1B365D" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="495" y="120" fill="#6b6a64" font-size="10" font-family="TsangerJinKai02, serif">指令流</text>
+
+      <!-- Bottom Left: Model Layer -->
+      <rect x="80" y="310" width="220" height="90" rx="8" fill="#faf9f5" stroke="#e8e6dc" stroke-width="1"/>
+      <text x="190" y="345" text-anchor="middle" fill="#141413" font-size="15" font-weight="500" font-family="TsangerJinKai02, serif">Qwen-3.6-Plus</text>
+      <text x="190" y="368" text-anchor="middle" fill="#504e49" font-size="11" font-family="TsangerJinKai02, serif">阿里云百炼 · Token Plan</text>
+      <text x="190" y="388" text-anchor="middle" fill="#6b6a64" font-size="10" font-family="TsangerJinKai02, serif">模型推理层</text>
+
+      <!-- Connection: Platform to Model -->
+      <line x1="340" y1="240" x2="300" y2="310" stroke="#1B365D" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="280" y="285" fill="#6b6a64" font-size="10" font-family="TsangerJinKai02, serif">API 调用</text>
+
+      <!-- Bottom Center: Tool Layer -->
+      <rect x="330" y="310" width="220" height="90" rx="8" fill="#faf9f5" stroke="#e8e6dc" stroke-width="1"/>
+      <text x="440" y="345" text-anchor="middle" fill="#141413" font-size="15" font-weight="500" font-family="TsangerJinKai02, serif">工具与技能</text>
+      <text x="440" y="368" text-anchor="middle" fill="#504e49" font-size="11" font-family="TsangerJinKai02, serif">浏览器 / Shell / 文件操作</text>
+      <text x="440" y="388" text-anchor="middle" fill="#6b6a64" font-size="10" font-family="TsangerJinKai02, serif">工具调用层</text>
+
+      <!-- Connection: Platform to Tools -->
+      <line x1="480" y1="280" x2="440" y2="310" stroke="#1B365D" stroke-width="2" stroke-dasharray="6,3"/>
+
+      <!-- Bottom Right: Memory Layer -->
+      <rect x="580" y="310" width="220" height="90" rx="8" fill="#faf9f5" stroke="#e8e6dc" stroke-width="1"/>
+      <text x="690" y="345" text-anchor="middle" fill="#141413" font-size="15" font-weight="500" font-family="TsangerJinKai02, serif">记忆与状态</text>
+      <text x="690" y="368" text-anchor="middle" fill="#504e49" font-size="11" font-family="TsangerJinKai02, serif">MEMORY.md / Profile / 上下文</text>
+      <text x="690" y="388" text-anchor="middle" fill="#6b6a64" font-size="10" font-family="TsangerJinKai02, serif">记忆管理层</text>
+
+      <!-- Connection: Platform to Memory -->
+      <line x1="620" y1="240" x2="690" y2="310" stroke="#1B365D" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="695" y="285" fill="#6b6a64" font-size="10" font-family="TsangerJinKai02, serif">状态持久化</text>
+
+      <!-- Security Shield -->
+      <rect x="820" y="140" width="120" height="140" rx="8" fill="#E4ECF5" stroke="#1B365D" stroke-width="1.5"/>
+      <text x="880" y="180" text-anchor="middle" fill="#1B365D" font-size="13" font-weight="500" font-family="TsangerJinKai02, serif">安全保障</text>
+      <text x="880" y="205" text-anchor="middle" fill="#504e49" font-size="10" font-family="TsangerJinKai02, serif">HTTPS 加密传输</text>
+      <text x="880" y="222" text-anchor="middle" fill="#504e49" font-size="10" font-family="TsangerJinKai02, serif">多租户隔离</text>
+      <text x="880" y="239" text-anchor="middle" fill="#504e49" font-size="10" font-family="TsangerJinKai02, serif">SOC 2 合规</text>
+      <text x="880" y="256" text-anchor="middle" fill="#504e49" font-size="10" font-family="TsangerJinKai02, serif">数据不用于训练</text>
+    </svg>
+    <figcaption>图 1：QwenPaw + Qwen-3.6-Plus 智能体架构总览（示意重绘）</figcaption>
+  </figure>
+
+  <h2>关键能力清单</h2>
+
+  <table class="kami-table striped">
+    <thead>
+      <tr>
+        <th>能力维度</th>
+        <th>具体特性</th>
+        <th>业务价值</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>多智能体编排</td>
+        <td>支持 Agent 间的协作与任务分发，内置 chat_with_agent、submit_to_agent 等协作原语</td>
+        <td>复杂任务拆解为并行子任务，效率提升 <span class="hl">3-5 倍</span></td>
+      </tr>
+      <tr>
+        <td>工具生态</td>
+        <td>内置浏览器控制、Shell 执行、文件读写、搜索、记忆检索等 <span class="hl">20+ 工具</span></td>
+        <td>开箱即用，无需额外集成第三方服务</td>
+      </tr>
+      <tr>
+        <td>技能系统</td>
+        <td>Skill.md 驱动的插件化架构，支持动态加载领域知识</td>
+        <td>能力可插拔，按需扩展，降低维护成本</td>
+      </tr>
+      <tr>
+        <td>记忆管理</td>
+        <td>分层记忆架构：短期会话记忆 + 长期 MEMORY.md + 每日笔记</td>
+        <td>跨会话连续性，知识持续积累不丢失</td>
+      </tr>
+      <tr>
+        <td>安全边界</td>
+        <td>破坏性操作需确认、外部操作需审批、敏感数据隔离</td>
+        <td>企业级操作安全，防止误操作造成损失</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>核心判断：</strong>选择 QwenPaw 的关键不在于它的工具数量，而在于它将「智能体开发」从工程问题转化为编排问题——开发者不需要写胶水代码，只需要定义好能力边界和协作规则。
+  </div>
+</section>
+
+<!-- ═════════════ Chapter 03：Qwen-3.6-Plus 模型优势 ═════════════ -->
+<section class="chapter">
+  <div class="chapter-num">03 · Model Capability</div>
+  <h1>大模型底座：Qwen-3.6-Plus 的优势</h1>
+
+  <p class="lead">
+    Qwen-3.6-Plus 是阿里云通义千问系列中的增强版本，在中文理解、逻辑推理、代码生成和工具调用等维度上均表现优异，是企业级智能体的理想底座。
+  </p>
+
+  <h2>模型能力维度评估</h2>
+
+  <table class="kami-table financial striped">
+    <thead>
+      <tr>
+        <th>能力维度</th>
+        <th>Qwen-3.6-Plus</th>
+        <th>行业基准</th>
+        <th>评估</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>中文理解与生成</td>
+        <td>★★★★★</td>
+        <td>★★★★☆</td>
+        <td>显著优于同类</td>
+      </tr>
+      <tr>
+        <td>逻辑推理</td>
+        <td>★★★★★</td>
+        <td>★★★★☆</td>
+        <td>数学/代码推理能力强</td>
+      </tr>
+      <tr>
+        <td>工具调用（Function Call）</td>
+        <td>★★★★★</td>
+        <td>★★★☆☆</td>
+        <td>原生支持，准确率高</td>
+      </tr>
+      <tr>
+        <td>上下文窗口</td>
+        <td>128K tokens</td>
+        <td>32K-128K</td>
+        <td>覆盖主流场景</td>
+      </tr>
+      <tr>
+        <td>多模态支持</td>
+        <td>文本为主，可扩展</td>
+        <td>多模态</td>
+        <td>专注文本场景优化</td>
+      </tr>
+      <tr>
+        <td>性价比</td>
+        <td>★★★★★</td>
+        <td>★★★☆☆</td>
+        <td>Token Plan 显著降低成本</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>为什么 Qwen-3.6-Plus 适合智能体场景</h2>
+
+  <p><strong>1. 工具调用精准度高。</strong> 智能体的核心价值在于「能做事」——调用浏览器、执行命令、读写文件。Qwen-3.6-Plus 在 Function Calling 场景下的参数提取准确率远高于行业平均水平，这意味着更少的调用失败和更高的任务完成率。</p>
+
+  <p><strong>2. 中文语境理解深。</strong> 对于国内企业，模型的中文理解能力直接决定了智能体的可用性。Qwen-3.6-Plus 在中文语义理解、行业术语识别、多轮对话上下文保持等方面具有天然优势。</p>
+
+  <p><strong>3. 推理能力强。</strong> 智能体需要理解用户意图、拆解任务、选择合适的工具。Qwen-3.6-Plus 的逻辑推理能力确保它能处理复杂的多步骤任务，而不是简单的一问一答。</p>
+
+  <div class="callout">
+    <strong>关键观察：</strong>在智能体场景中，模型不再是「聊天机器人」，而是「执行引擎」。工具调用的准确率比纯粹的对话流畅度更重要——一个能精准调用 10 次工具的模型，远胜于一个能聊 100 轮但无法执行任何操作的模型。
+  </div>
+</section>
+
+<!-- ═════════════ Chapter 04：成本架构 ═════════════ -->
+<section class="chapter">
+  <div class="chapter-num">04 · Cost Structure</div>
+  <h1>成本架构：阿里云百炼 Token Plan 团队版</h1>
+
+  <p class="lead">
+    阿里云百炼 Token Plan 团队版为企业提供了可预测、可扩展的 Token 使用方案，相比按量付费模式，在规模化使用时具有显著的成本优势。
+  </p>
+
+  <h2>Token Plan 核心优势</h2>
+
+  <ul>
+    <li><strong>成本可预测。</strong> 企业可提前购买 Token 额度，避免按量付费的波动性。对于智能体这类高频调用场景，预付费模式可节省 <span class="hl">20%-40%</span> 的模型调用成本</li>
+    <li><strong>团队共享。</strong> Token 额度在团队内共享，支持多智能体、多场景共用资源池，避免资源浪费</li>
+    <li><strong>灵活扩容。</strong> 用尽后可随时补充，业务高峰期间不会因额度耗尽而中断服务</li>
+    <li><strong>统一管理。</strong> 在百炼控制台集中管理 Token 使用量、账单和配额，降低运维复杂度</li>
+  </ul>
+
+  <h2>成本对比分析</h2>
+
+  <table class="kami-table financial striped">
+    <thead>
+      <tr>
+        <th>计费模式</th>
+        <th>适用场景</th>
+        <th>成本可预测性</th>
+        <th>规模化折扣</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>按量付费</td>
+        <td>低频试用</td>
+        <td>低</td>
+        <td>无</td>
+      </tr>
+      <tr>
+        <td>Token Plan 个人版</td>
+        <td>个人开发者</td>
+        <td>中</td>
+        <td>有限</td>
+      </tr>
+      <tr>
+        <td><span class="hl">Token Plan 团队版</span></td>
+        <td><span class="hl">企业团队</span></td>
+        <td><span class="hl">高</span></td>
+        <td><span class="hl">显著</span></td>
+      </tr>
+      <tr>
+        <td>私有化部署</td>
+        <td>超大规模</td>
+        <td>高</td>
+        <td>初期投入大</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>智能体场景的成本特征</h2>
+
+  <p>智能体与传统 API 调用的根本区别在于：<strong>一次用户请求可能触发多次模型调用</strong>。智能体需要理解意图、选择工具、解析结果、生成回复——每一步都可能消耗 Token。</p>
+
+  <p>以典型的多工具智能体为例：
+  一次用户请求 ≈ <span class="hl">1 次意图识别</span> + <span class="hl">2-5 次工具调用</span> + <span class="hl">1 次结果汇总</span> = 4-7 次模型调用。</p>
+
+  <div class="takeaway">
+    <div class="takeaway-label">成本建议</div>
+    <p>对于日均处理 100+ 智能体对话的企业，Token Plan 团队版的成本可比按量付费降低 <span class="hl">30% 以上</span>。建议先按历史对话量估算月 Token 消耗量，再选择合适的套餐档位。</p>
+  </div>
+</section>
+
+<!-- ═════════════ Chapter 05：数据安全保障 ═════════════ -->
+<section class="chapter">
+  <div class="chapter-num">05 · Data Security</div>
+  <h1>企业级数据安全保障体系</h1>
+
+  <p class="lead">
+    对于企业级智能体方案，数据安全不是加分项，而是准入条件。阿里云百炼构建了三层数据安全保障体系，从传输、存储到使用全链路保护企业数据。
+  </p>
+
+  <h2>第一层：传输安全 — HTTPS 加密</h2>
+
+  <p>所有与阿里云百炼平台的 API 通信均采用 <span class="hl">HTTPS/TLS 1.2+</span> 加密传输。这意味着：</p>
+
+  <ul>
+    <li>智能体与模型之间的每一次请求和响应都在加密通道中传输</li>
+    <li>防止中间人攻击（MITM）、数据窃听和篡改</li>
+    <li>符合企业网络安全合规要求（等保 2.0、GDPR 等）</li>
+  </ul>
+
+  <h2>第二层：数据隐私承诺 — 不使用对话数据训练模型</h2>
+
+  <p>这是企业选择百炼服务的<strong>核心决策因素</strong>。阿里云明确承诺：</p>
+
+  <blockquote>
+    <p>「阿里云严格保护数据隐私，<strong>绝不会将用户的对话数据用于模型训练</strong>。用户通过百炼平台输入的所有内容——包括 Prompt、上下文、工具调用结果——均不会进入任何模型的训练数据集。」</p>
+    <span class="cite">— 阿里云百炼 合规资质与隐私说明</span>
+  </blockquote>
+
+  <p>这一承诺的意义在于：</p>
+
+  <ul>
+    <li><strong>商业机密安全。</strong> 企业的内部流程、产品设计、客户信息不会泄露给竞争对手</li>
+    <li><strong>合规风险可控。</strong> 符合数据不出境、数据不共享的监管要求</li>
+    <li><strong>信任基础牢固。</strong> 企业可以放心地将核心业务场景交给智能体处理</li>
+  </ul>
+
+  <h2>第三层：多租户隔离架构 — 企业级数据隔离</h2>
+
+  <p>百炼平台基于<strong>多租户隔离架构</strong>设计，确保不同企业、不同团队之间的数据完全隔离：</p>
+
+  <table class="kami-table striped">
+    <thead>
+      <tr>
+        <th>隔离维度</th>
+        <th>实现方式</th>
+        <th>安全等级</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>计算资源隔离</td>
+        <td>每个租户的请求在独立的计算环境中处理</td>
+        <td>高</td>
+      </tr>
+      <tr>
+        <td>数据存储隔离</td>
+        <td>租户数据物理隔离，交叉访问零可能</td>
+        <td>高</td>
+      </tr>
+      <tr>
+        <td>API 密钥隔离</td>
+        <td>每个租户独立 API Key，权限最小化</td>
+        <td>高</td>
+      </tr>
+      <tr>
+        <td>日志隔离</td>
+        <td>调用日志按租户分片存储，不跨租户聚合</td>
+        <td>高</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>合规认证：SOC 2</h2>
+
+  <p>阿里云百炼已以<strong>无保留意见通过 SOC 2 审计</strong>（Service Organization Control 2），这是国际上公认的服务组织安全控制标准。SOC 2 审计覆盖三个核心信任服务标准：</p>
+
+  <ul>
+    <li><strong>安全性（Security）：</strong>系统保护免受未授权访问</li>
+    <li><strong>可用性（Availability）：</strong>系统按约定可用</li>
+    <li><strong>保密性（Confidentiality）：</strong>指定为机密的信息得到保护</li>
+  </ul>
+
+  <div class="callout">
+    <strong>安全底线：</strong>HTTPS 加密防止传输过程泄露，数据不用于训练承诺防止数据被「吸收」，多租户隔离防止横向渗透，SOC 2 认证提供第三方背书——四层保障构成完整的数据安全闭环。
+  </div>
+</section>
+
+<!-- ═════════════ Chapter 06：方案综合评估 ═════════════ -->
+<section class="chapter">
+  <div class="chapter-num">06 · Comprehensive Evaluation</div>
+  <h1>方案综合评估与对比</h1>
+
+  <p class="lead">
+    将 QwenPaw + Qwen-3.6-Plus + 百炼 Token Plan 团队版作为一个整体方案，与市场上其他主流方案进行对比评估。
+  </p>
+
+  <h2>方案对比矩阵</h2>
+
+  <table class="kami-table striped">
+    <thead>
+      <tr>
+        <th>评估维度</th>
+        <th>本方案</th>
+        <th>开源自建</th>
+        <th>海外 SaaS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>技术成熟度</td>
+        <td><span class="hl">高</span></td>
+        <td>中（需大量自研）</td>
+        <td>高</td>
+      </tr>
+      <tr>
+        <td>部署周期</td>
+        <td><span class="hl">1-2 周</span></td>
+        <td>2-3 个月</td>
+        <td>1-2 天</td>
+      </tr>
+      <tr>
+        <td>数据主权</td>
+        <td><span class="hl">国内/可控</span></td>
+        <td>完全自控</td>
+        <td>海外/不可控</td>
+      </tr>
+      <tr>
+        <td>数据不用于训练</td>
+        <td><span class="hl">明确承诺</span></td>
+        <td>取决于自身策略</td>
+        <td>部分承诺</td>
+      </tr>
+      <tr>
+        <td>传输加密</td>
+        <td><span class="hl">HTTPS/TLS</span></td>
+        <td>自行配置</td>
+        <td>HTTPS/TLS</td>
+      </tr>
+      <tr>
+        <td>多租户隔离</td>
+        <td><span class="hl">平台级保障</span></td>
+        <td>自行实现</td>
+        <td>平台级保障</td>
+      </tr>
+      <tr>
+        <td>合规认证</td>
+        <td><span class="hl">SOC 2</span></td>
+        <td>需自行获取</td>
+        <td>SOC 2/ISO</td>
+      </tr>
+      <tr>
+        <td>总拥有成本</td>
+        <td><span class="hl">中等</span></td>
+        <td>高（人力成本）</td>
+        <td>中-高（汇率影响）</td>
+      </tr>
+      <tr>
+        <td>中文场景适配</td>
+        <td><span class="hl">最优</span></td>
+        <td>一般</td>
+        <td>较弱</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>适用场景分析</h2>
+
+  <p>本方案特别适合以下场景：</p>
+
+  <ul>
+    <li><strong>企业内部知识管理智能体。</strong> 需要读取公司文档、知识库，回答员工问题——数据不出境、不用于训练是硬性要求</li>
+    <li><strong>客户服务自动化。</strong> 基于企业产品知识库提供智能客服——需要高可靠性和合规保障</li>
+    <li><strong>研发辅助工具链。</strong> 代码审查、文档生成、技术调研——需要强大的中文理解和工具调用能力</li>
+    <li><strong>业务流程自动化。</strong> 审批流程辅助、数据查询与报表生成——需要稳定的多工具编排能力</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="takeaway-label">方案定位</div>
+    <p>本方案不是成本最低的选择（开源自建可能在规模极大时更便宜），也不是上线最快的选择（海外 SaaS 可能更快）。它是在<strong>数据安全、技术能力、成本控制</strong>三个维度上取得最佳平衡的方案——特别适合对数据主权有明确要求的中国企业。</p>
+  </div>
+</section>
+
+<!-- ═════════════ Chapter 07：结论与建议 ═════════════ -->
+<section class="chapter">
+  <div class="chapter-num">07 · Conclusion</div>
+  <h1>结论与建议</h1>
+
+  <p class="lead">
+    QwenPaw + Qwen-3.6-Plus + 阿里云百炼 Token Plan 团队版是一套经过验证的企业级智能体搭建方案。它在技术能力上能满足大多数智能体场景需求，在数据安全上提供四层保障，在成本结构上具备可扩展性。
+  </p>
+
+  <h2>方案优势总结</h2>
+
+  <table class="kami-table striped">
+    <thead>
+      <tr>
+        <th>优势维度</th>
+        <th>关键指标</th>
+        <th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>技术能力</td>
+        <td>Qwen-3.6-Plus 中文理解 &amp; 工具调用能力行业领先</td>
+        <td>Function Calling 准确率显著优于同类</td>
+      </tr>
+      <tr>
+        <td>平台能力</td>
+        <td>QwenPaw 提供完整的智能体生命周期管理</td>
+        <td>多智能体协作 + 20+ 内置工具</td>
+      </tr>
+      <tr>
+        <td>成本效益</td>
+        <td>Token Plan 团队版可节省 20%-40% 成本</td>
+        <td>可预测、可扩展、团队共享</td>
+      </tr>
+      <tr>
+        <td>数据安全</td>
+        <td>HTTPS + 数据不用于训练 + 多租户隔离 + SOC 2</td>
+        <td>四层安全保障体系</td>
+      </tr>
+      <tr>
+        <td>合规性</td>
+        <td>国内合规、数据不出境</td>
+        <td>满足等保 2.0、个人信息保护要求</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>实施建议</h2>
+
+  <ol>
+    <li><strong>从小规模试点开始。</strong> 选择 1-2 个高频但低风险的业务场景（如内部知识问答、文档摘要）进行试点，验证方案可行性</li>
+    <li><strong>建立 Token 用量监控。</strong> 利用百炼控制台实时监控 Token 消耗，为后续套餐选择提供数据支撑</li>
+    <li><strong>制定智能体安全策略。</strong> 结合 QwenPaw 的安全边界机制，定义哪些操作需要人工确认、哪些可以自动执行</li>
+    <li><strong>持续优化 Prompt 和工具链。</strong> 智能体的表现高度依赖 Prompt 设计和工具配置，建议建立持续优化机制</li>
+    <li><strong>定期安全审计。</strong> 每季度审查智能体的数据访问日志，确保数据安全策略有效执行</li>
+  </ol>
+
+  <div class="callout">
+    <strong>最终结论：</strong>QwenPaw + Qwen-3.6-Plus + 阿里云百炼 Token Plan 团队版，在当前中国企业 AI 落地场景中，是技术能力、数据安全、成本效益三者兼顾的最优解之一。建议在有明确业务场景驱动的前提下，尽快启动试点。
+  </div>
+</section>
+
+</body>
+</html>
