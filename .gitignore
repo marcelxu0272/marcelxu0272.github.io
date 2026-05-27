@@ -1,2 +1,9 @@
 # Cursor IDE 本地规则与配置（勿提交）
 .cursor/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
